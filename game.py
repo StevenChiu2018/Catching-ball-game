@@ -1,3 +1,5 @@
+from random import randint
+
 LENGTH = 100
 WIDTH = 50
 POINT = 5
@@ -43,6 +45,7 @@ class Score:
         self.life = self.life - 1
     def drop_ball(self):
         self.ball = self.ball - 1
+        return randint(0, WIDTH)
     def get_life(self):
         return self.life
     def get_point(self):
