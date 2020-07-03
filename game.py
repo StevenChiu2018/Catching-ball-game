@@ -43,3 +43,9 @@ class Score:
         self.life = self.life - 1
     def drop_ball(self):
         self.ball = self.ball - 1
+    def get_life(self):
+        return self.life
+    def get_point(self):
+        return self.point
+    def get_ball(self):
+        return self.ball
