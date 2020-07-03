@@ -1,6 +1,6 @@
 from random import randint
 
-LENGTH = 100
+HEIGHT = 100
 WIDTH = 50
 POINT = 5
 LIFE = 5
@@ -11,10 +11,10 @@ class Ball:
         self.x = start_point
         self.y = 0
     def down(self):
-        if self.y < LENGTH:
+        if self.y < HEIGHT:
             self.y = self.y + 1
     def is_terminate(self):
-        if self.y == LENGTH:
+        if self.y == HEIGHT:
             return True
         else:
             return False
