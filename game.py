@@ -1,12 +1,14 @@
+import os, time
 from random import randint
 
-HEIGHT = 100
-WIDTH = 50
+HEIGHT = 20
+WIDTH = 15
 POINT = 5
 LIFE = 5
 BALLAMOUNT = 20
-BALLCHAR = ''
-BACKGROUND = ''
+BALLCHAR = 'O'
+BACKGROUND = '*'
+DELAYTIME = 0.5
 
 class Ball:
     def __init__(self, start_point):
@@ -20,6 +22,8 @@ class Ball:
             return self.x
         else:
             return -1
+    def getX(self):
+        return self.x
 
 class Score:
     def __init__(self, player):
@@ -28,7 +32,7 @@ class Score:
         self.ball = BALLAMOUNT
         self.name = player
     def is_end(self):
-        if self.life <= 0 or self.ball <= 0:
+        if self.life <= 0:
             return True
         else:
             return False
@@ -47,7 +51,7 @@ class Score:
         self.life = self.life - 1
     def drop_ball(self):
         self.ball = self.ball - 1
-        return randint(0, WIDTH)
+        return randint(0, WIDTH - 1)
     def get_life(self):
         return self.life
     def get_point(self):
@@ -62,15 +66,16 @@ class Board:
         self.balls = []
         self.catcher_pos = WIDTH / 2
     def render(self):
-        level_of_ball = 0
-        for _ in range(0, HEIGHT):
+        os.system('cls')
+        for i in range(0, HEIGHT):
             for j in range(0, WIDTH):
-                if level_of_ball < len(self.balls) and j == self.balls[level_of_ball]:
-                    print(BALLCHAR)
-                    self.balls[level_of_ball].down
-                    level_of_ball = level_of_ball + 1
+                if i < len(self.balls) and j == self.balls[i].getX():
+                    print(BALLCHAR, end = '')
+                    self.balls[i].down()
                 else:
-                    print(BACKGROUND)
+                    print(BACKGROUND, end = '')
+                
+            print()
     def move_left(self):
         if self.catcher_pos > 0:
             self.catcher_pos = self.catcher_pos - 1
@@ -89,3 +94,12 @@ class Board:
             self.score.deduct_life()
         self.balls.pop()
 
+if __name__ == "__main__":
+    player_name = input('Please input name: ')
+    score = Score(player_name)
+    game = Board(score)
+    while not score.is_end():
+        game.render()
+        game.add_ball(score.drop_ball())
+        game.is_score()
+        time.sleep(DELAYTIME)
