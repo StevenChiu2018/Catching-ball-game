@@ -1,7 +1,7 @@
 import os, time
 from random import randint
 
-HEIGHT = 20
+HEIGHT = 30
 WIDTH = 15
 POINT = 5
 LIFE = 5
@@ -50,8 +50,11 @@ class Score:
     def deduct_life(self):
         self.life = self.life - 1
     def drop_ball(self):
-        self.ball = self.ball - 1
-        return randint(0, WIDTH - 1)
+        if self.ball:
+            self.ball = self.ball - 1 
+            return randint(0, WIDTH - 1)
+        else:
+            return -1
     def get_life(self):
         return self.life
     def get_point(self):
@@ -93,12 +96,14 @@ class Board:
         else:
             self.score.deduct_life()
         self.balls.pop()
+    def no_ball_on_board(self):
+        return len(self.balls) == 0
 
 if __name__ == "__main__":
     player_name = input('Please input name: ')
     score = Score(player_name)
     game = Board(score)
-    while not score.is_end():
+    while (not score.is_end()) or game.no_ball_on_board():
         game.render()
         game.add_ball(score.drop_ball())
         game.is_score()
