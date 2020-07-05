@@ -2,8 +2,11 @@ import os, time
 from random import randint
 import tkinter as tk
 
-HEIGHT = 200
-WIDTH = 300
+WINDOWHEIGHT = 400
+WINDOWWIDTH = 300
+
+GAMEHEIGHT = 200
+GAMEWIDTH = 300
 POINT = 5
 LIFE = 5
 
@@ -56,7 +59,7 @@ class Score:
         else:
             head_text.set(self.name + " ， 在努力練習！")
         label = tk.Label(self.window, textvariable = head_text)
-        label.place(x = (WIDTH / 4), y = (HEIGHT / 4))
+        label.place(x = (GAMEWIDTH / 4), y = (GAMEHEIGHT / 4))
         self.window.update()
     def add_point(self):
         self.point = self.point + POINT
@@ -65,7 +68,7 @@ class Score:
     def drop_ball(self):
         if self.ball:
             self.ball = self.ball - 1 
-            return randint(0, WIDTH - 1)
+            return randint(0, GAMEWIDTH - 1)
         else:
             return -1
     def get_life(self):
@@ -74,11 +77,16 @@ class Score:
         return self.point
     def get_ball(self):
         return self.ball
+    def show_state(self):
+        head_text = tk.StringVar()
+        head_text.set("Player: " + self.name + "    " + "Score: " + str(self.point) + "    " + "Life: " + str(self.life) + "/" + str(LIFE))
+        label = tk.Label(self.window, textvariable = head_text)
+        label.place(x = 0, y = GAMEHEIGHT + 1)
 
 class Paddle:
     def __init__(self, pos, canvas):
         self.canvas = canvas
-        self.id = self.canvas.create_rectangle(pos, HEIGHT - PADDLEHEIGHT, pos + PADDLELENGTH, HEIGHT, fill = PADDLECOLOR)
+        self.id = self.canvas.create_rectangle(pos, GAMEHEIGHT - PADDLEHEIGHT, pos + PADDLELENGTH, GAMEHEIGHT, fill = PADDLECOLOR)
         self.canvas.bind_all("<KeyPress-Left>", self.move_left)
         self.canvas.bind_all("<KeyPress-Right>", self.move_right)
     def move_left(self, event):
@@ -87,7 +95,7 @@ class Paddle:
             self.canvas.move(self.id, -1 * PADDLESTEP, 0)
     def move_right(self, event):
         pos = self.canvas.coords(self.id)
-        if pos [2] < (WIDTH - PADDLESTEP):
+        if pos [2] < (GAMEWIDTH - PADDLESTEP):
             self.canvas.move(self.id, PADDLESTEP, 0)
     def get_pos(self):
         return self.canvas.coords(self.id)
@@ -102,7 +110,7 @@ class Board:
         for ball in self.balls:
             ball_pos = ball.get_pos()
             paddle_pos = self.paddle.get_pos()
-            if ball_pos[3] == HEIGHT - PADDLEHEIGHT:
+            if ball_pos[3] == GAMEHEIGHT - PADDLEHEIGHT:
                 if ball_pos[2] >= paddle_pos[0] and ball_pos[0] <= paddle_pos[2]:
                     self.score.add_point()
                 else:
@@ -119,7 +127,7 @@ class Board:
 
 if __name__ == "__main__":
     window = tk.Tk()
-    canvas = tk.Canvas(window, width = WIDTH, height = HEIGHT, bg = BACKGROUND, bd = 0, highlightthickness = 0)
+    canvas = tk.Canvas(window, width = WINDOWWIDTH, height = WINDOWHEIGHT, bg = BACKGROUND, bd = 0, highlightthickness = 0)
     window.resizable(0,0)
     canvas.pack()
 
@@ -133,6 +141,7 @@ if __name__ == "__main__":
         if clock % 100 == 0:
             board.add_ball()
         board.render()
+        score.show_state()
         window.update_idletasks()
         window.update()
         time.sleep(DELAYTIME)
