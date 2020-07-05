@@ -16,6 +16,9 @@ PADDLELENGTH = 30
 PADDLESTEP = 5
 PADDLEHEIGHT = 20
 
+LABELX = 0
+LABELY = 0
+
 BACKGROUND = 'skyblue'
 DELAYTIME = 0.01
 
@@ -31,25 +34,30 @@ class Ball:
         self.canvas.delete(self.id)
 
 class Score:
-    def __init__(self, player):
+    def __init__(self, player, window):
         self.life = LIFE
         self.point = 0
         self.ball = BALLAMOUNT
         self.name = player
+        self.window = window
     def is_end(self):
         if self.life <= 0 or (self.point + (LIFE - self.life) * POINT) == 100:
             return True
         else:
             return False
     def show_score(self):
+        head_text = tk.StringVar()
         if self.point >= 90:
-            print(self.name + " ， 您好棒！")
+            head_text.set(self.name + " ， 您好棒！")
         elif self.point >= 75:
-            print(self.name + " ， 不錯唷！")
+            head_text.set(self.name + " ， 不錯唷！")
         elif self.point >= 60:
-            print(self.name + " ， 還可以！")
+            head_text.set(self.name + " ， 還可以！")
         else:
-            print(self.name + " ， 在努力練習！")
+            head_text.set(self.name + " ， 在努力練習！")
+        label = tk.Label(self.window, textvariable = head_text)
+        label.place(x = (WIDTH / 4), y = (HEIGHT / 4))
+        self.window.update()
     def add_point(self):
         self.point = self.point + POINT
     def deduct_life(self):
@@ -115,7 +123,8 @@ if __name__ == "__main__":
     window.resizable(0,0)
     canvas.pack()
 
-    score = Score("Steven")
+    player_name = input('Player name: ')
+    score = Score(player_name, window)
     paddle = Paddle(0, canvas)
     board = Board(score, paddle, canvas)
     clock = 0
@@ -128,3 +137,6 @@ if __name__ == "__main__":
         window.update()
         time.sleep(DELAYTIME)
         clock = clock + 1
+    score.show_score()
+    while True:
+        input()
