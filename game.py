@@ -131,6 +131,7 @@ if __name__ == "__main__":
     window = tk.Tk()
     canvas = tk.Canvas(window, width = WINDOWWIDTH, height = WINDOWHEIGHT, bg = BACKGROUND, bd = 0, highlightthickness = 0)
     window.resizable(0,0)
+    window.title('Catching Ball Game')
     canvas.pack()
 
     player_name = input('Player name: ')
@@ -149,5 +150,4 @@ if __name__ == "__main__":
         time.sleep(DELAYTIME)
         clock = clock + 1
     score.show_score()
-    while True:
-        input()
+    input()
