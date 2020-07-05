@@ -2,19 +2,19 @@ import os, time
 from random import randint
 import tkinter as tk
 
-HEIGHT = 300
-WIDTH = 150
+HEIGHT = 200
+WIDTH = 300
 POINT = 5
 LIFE = 5
 
 BALLAMOUNT = 20
-BALLLENGTH = 1
+BALLLENGTH = 10
 BALLCOLOR = 'blue'
 
 PADDLECOLOR = 'yellow'
-PADDLELENGTH = 20
+PADDLELENGTH = 30
 PADDLESTEP = 5
-PADDLEHEIGHT = 1
+PADDLEHEIGHT = 20
 
 BACKGROUND = 'skyblue'
 DELAYTIME = 0.01
@@ -92,10 +92,11 @@ class Board:
         self.canvas = canvas
     def render(self):
         for ball in self.balls:
-            pos = ball.get_pos()
-            if pos[3] == HEIGHT - PADDLEHEIGHT:
-                if pos[2] == self.paddle.get_pos()[0]:
-                    self.score.get_point()
+            ball_pos = ball.get_pos()
+            paddle_pos = self.paddle.get_pos()
+            if ball_pos[3] == HEIGHT - PADDLEHEIGHT:
+                if ball_pos[2] >= paddle_pos[0] and ball_pos[0] <= paddle_pos[2]:
+                    self.score.add_point()
                 else:
                     self.score.deduct_life()
                 ball.delete()
