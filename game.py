@@ -1,29 +1,32 @@
 import os, time
 from random import randint
+import tkinter as tk
 
-HEIGHT = 30
-WIDTH = 15
+HEIGHT = 300
+WIDTH = 150
 POINT = 5
 LIFE = 5
+
 BALLAMOUNT = 20
-BALLCHAR = 'O'
-BACKGROUND = '*'
+BALLLENGTH = 1
+BALLCOLOR = 'blue'
+
+PADDLECOLOR = 'yellow'
+PADDLELENGTH = 20
+PADDLESTEP = 5
+PADDLEHEIGHT = 1
+
+BACKGROUND = 'skyblue'
 DELAYTIME = 0.5
 
 class Ball:
-    def __init__(self, start_point):
-        self.x = start_point
-        self.y = 0
-    def down(self):
-        if self.y < HEIGHT:
-            self.y = self.y + 1
-    def is_terminate(self):
-        if self.y == HEIGHT:
-            return self.x
-        else:
-            return -1
-    def getX(self):
-        return self.x
+    def __init__(self, pos, canvas):
+        self.canvas = canvas
+        self.id = self.canvas.create_oval(pos, 0, pos + BALLLENGTH, BALLLENGTH, fill = BALLCOLOR)
+    def render(self):
+        self.canvas.move(self.id, 0, 1)
+    def get_pos(self):
+        return self.canvas.coords(self.id)
 
 class Score:
     def __init__(self, player):
@@ -32,7 +35,7 @@ class Score:
         self.ball = BALLAMOUNT
         self.name = player
     def is_end(self):
-        if self.life <= 0:
+        if self.life <= 0 or (self.point + (LIFE - self.life) * POINT) == 100:
             return True
         else:
             return False
@@ -61,50 +64,59 @@ class Score:
         return self.point
     def get_ball(self):
         return self.ball
-# Use link list to chain all the ball in different level of the height
+
+class Paddle:
+    def __init__(self, pos, canvas):
+        self.canvas = canvas
+        self.id = self.canvas.create_rectangle(pos, HEIGHT - PADDLEHEIGHT, pos + PADDLELENGTH, HEIGHT, fill = PADDLECOLOR)
+        self.canvas.bind_all("<KeyPress-Left>", self.move_left)
+        self.canvas.bind_all("<KeyPress-Right>", self.move_right)
+    def move_left(self, event):
+        pos = self.canvas.coords(self.id)
+        if pos[0] > PADDLESTEP:
+            self.canvas.move(self.id, -1 * PADDLESTEP, 0)
+    def move_right(self, event):
+        pos = self.canvas.coords(self.id)
+        if pos [2] < (WIDTH - PADDLESTEP):
+            self.canvas.move(self.id, PADDLESTEP, 0)
+    def get_pos(self):
+        return self.canvas.coords(self.id)
 
 class Board:
-    def __init__(self, new_score):
+    def __init__(self, new_score, paddle, canvas):
         self.score = new_score
         self.balls = []
-        self.catcher_pos = WIDTH / 2
+        self.paddle = paddle
+        self.canvas = canvas
     def render(self):
-        os.system('cls')
-        for i in range(0, HEIGHT):
-            for j in range(0, WIDTH):
-                if i < len(self.balls) and j == self.balls[i].getX():
-                    print(BALLCHAR, end = '')
-                    self.balls[i].down()
+        for ball in self.balls:
+            pos = ball.get_pos()
+            if pos[2] == HEIGHT - PADDLEHEIGHT:
+                if pos[2] == self.paddle.get_pos()[0]:
+                    self.score.get_point()
                 else:
-                    print(BACKGROUND, end = '')
-                
-            print()
-    def move_left(self):
-        if self.catcher_pos > 0:
-            self.catcher_pos = self.catcher_pos - 1
-    def move_right(self):
-        if self.catcher_pos < WIDTH:
-            self.catcher_pos = self.catcher_pos + 1
-    def add_ball(self, pos):
-        ball = Ball(pos)
-        self.balls.insert(0, ball)
-    def is_score(self):
-        if not self.balls or self.balls[-1].is_terminate() == -1:
-            return
-        elif self.balls[-1].is_terminate() == self.catcher_pos:
-            self.score.add_point()
-        else:
-            self.score.deduct_life()
-        self.balls.pop()
-    def no_ball_on_board(self):
-        return len(self.balls) == 0
+                    self.score.deduct_life()
+            else:
+                ball.render()
+    def add_ball(self):
+        ball_pos = self.score.drop_ball()
+        if ball_pos != -1:
+            ball = Ball(ball_pos, self.canvas)
+            self.balls.append(ball)
 
 if __name__ == "__main__":
-    player_name = input('Please input name: ')
-    score = Score(player_name)
-    game = Board(score)
-    while (not score.is_end()) or game.no_ball_on_board():
-        game.render()
-        game.add_ball(score.drop_ball())
-        game.is_score()
+    window = tk.Tk()
+    canvas = tk.Canvas(window, width = WIDTH, height = HEIGHT, bg = BACKGROUND, bd = 0, highlightthickness = 0)
+    window.resizable(0,0)
+    canvas.pack()
+
+    score = Score("Steven")
+    paddle = Paddle(0, canvas)
+    board = Board(score, paddle, canvas)
+
+    while not score.is_end():
+        board.add_ball()
+        board.render()
+        window.update_idletasks()
+        window.update()
         time.sleep(DELAYTIME)
