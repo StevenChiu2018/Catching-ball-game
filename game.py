@@ -2,27 +2,29 @@ import os, time
 from random import randint
 import tkinter as tk
 
+# 視窗大小
 WINDOWHEIGHT = 400
 WINDOWWIDTH = 300
 
+# 遊戲的基本設置
 GAMEHEIGHT = 200
 GAMEWIDTH = 300
 POINT = 5
 LIFE = 5
 
+# 球的基本設置
 BALLAMOUNT = 20
 BALLLENGTH = 10
 BALLCOLOR = 'blue'
 
+#接盤的基本設置
 PADDLECOLOR = 'yellow'
 PADDLELENGTH = 30
 PADDLESTEP = 5
 PADDLEHEIGHT = 20
 
-LABELX = 0
-LABELY = 0
-
-BACKGROUND = 'skyblue'
+#系統設置
+BACKGROUND = 'skyblue' #背景顏色設置
 DELAYTIME = 0.01
 
 class Ball:
