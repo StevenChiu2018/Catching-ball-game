@@ -17,7 +17,7 @@ PADDLESTEP = 5
 PADDLEHEIGHT = 1
 
 BACKGROUND = 'skyblue'
-DELAYTIME = 0.5
+DELAYTIME = 0.01
 
 class Ball:
     def __init__(self, pos, canvas):
@@ -27,6 +27,8 @@ class Ball:
         self.canvas.move(self.id, 0, 1)
     def get_pos(self):
         return self.canvas.coords(self.id)
+    def delete(self):
+        self.canvas.delete(self.id)
 
 class Score:
     def __init__(self, player):
@@ -91,11 +93,13 @@ class Board:
     def render(self):
         for ball in self.balls:
             pos = ball.get_pos()
-            if pos[2] == HEIGHT - PADDLEHEIGHT:
+            if pos[3] == HEIGHT - PADDLEHEIGHT:
                 if pos[2] == self.paddle.get_pos()[0]:
                     self.score.get_point()
                 else:
                     self.score.deduct_life()
+                ball.delete()
+                del self.balls[0]
             else:
                 ball.render()
     def add_ball(self):
@@ -113,10 +117,13 @@ if __name__ == "__main__":
     score = Score("Steven")
     paddle = Paddle(0, canvas)
     board = Board(score, paddle, canvas)
+    clock = 0
 
     while not score.is_end():
-        board.add_ball()
+        if clock % 100 == 0:
+            board.add_ball()
         board.render()
         window.update_idletasks()
         window.update()
         time.sleep(DELAYTIME)
+        clock = clock + 1
